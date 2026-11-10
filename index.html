@@ -130,6 +130,28 @@ textarea { width: 100%; resize: vertical; min-height: 72px; }
 .item a { color: var(--accent); overflow-wrap: anywhere; }
 .editform { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; }
 .editform textarea { grid-column: 1 / -1; }
+.journal { display: grid; gap: 14px; border-top: 1px dashed var(--line); padding-top: 14px; }
+.path { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 6px; }
+.path li { border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font-size: 13px; display: grid; gap: 2px; }
+.path li b { font-family: var(--mono); font-weight: 500; font-size: 12px; color: var(--muted); }
+.path li.done { background: var(--accent-soft); border-color: var(--accent); }
+.path li.now { border-color: var(--warn); background: var(--warn-soft); }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap: 8px; }
+.stat { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 12.5px; color: var(--muted); }
+.stat b { display: block; font-family: var(--mono); font-weight: 500; font-size: 19px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.gate { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 13.5px; }
+.gate li::before { content: "○ "; color: var(--muted); }
+.gate li.pass::before { content: "● "; color: var(--ok); }
+.gate li.fail::before { content: "● "; color: var(--bad); }
+.tradeform { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; align-items: center; }
+.tradeform label { font-size: 13px; display: flex; gap: 6px; align-items: center; }
+.tradeform .wide { grid-column: 1 / -1; }
+.trades { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.trades th { text-align: left; font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 400; }
+.trades td, .trades th { padding: 6px 8px 6px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.trades .r { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.trades .r.win { color: var(--ok); } .trades .r.loss { color: var(--bad); }
+.scroll { overflow-x: auto; }
 .results { display: grid; gap: 8px; }
 .note { font-size: 13px; color: var(--muted); }
 </style>
@@ -193,6 +215,26 @@ textarea { width: 100%; resize: vertical; min-height: 72px; }
     </form>
     <div class="tabs" id="tabs"></div>
     <ul class="items" id="items"></ul>
+    <div class="journal" id="journal" hidden>
+      <h2>Journey</h2>
+      <ol class="path" id="jPath"></ol>
+      <h2>Trade journal</h2>
+      <div class="tabs" id="jTabs"></div>
+      <div class="stats" id="jStats"></div>
+      <ul class="gate" id="jGate"></ul>
+      <form class="tradeform" id="tradeForm" autocomplete="off">
+        <input type="date" id="tDate" aria-label="Trade date">
+        <select id="tMode" aria-label="Type"><option value="backtest">Backtest</option><option value="demo">Demo</option><option value="live">Live</option></select>
+        <select id="tSide" aria-label="Direction"><option value="buy">Buy</option><option value="sell">Sell</option></select>
+        <input type="text" id="tR" inputmode="decimal" placeholder="Result in R, e.g. 2 or -1" aria-label="Result in R">
+        <label for="tRules"><input type="checkbox" id="tRules" checked> Followed my rules</label>
+        <input type="text" id="tNote" class="wide" placeholder="Setup and what happened (level, entry reason, mistake)" aria-label="Note" maxlength="500">
+        <button class="btn primary" type="submit">Log trade</button>
+        <span class="note" id="tMsg"></span>
+      </form>
+      <div class="scroll"><table class="trades" id="jList"></table></div>
+      <p class="note" style="margin:0">R is the result divided by what you risked: a full stop-loss is -1, a win at twice your risk is 2. Drawdown assumes 1% risk per trade.</p>
+    </div>
   </section>
   <section class="panel" aria-label="Backup">
     <h2>Backup</h2>
@@ -234,7 +276,8 @@ window.__lp = (() => {
       for (const a of data.areas) {
         if (!a || typeof a.id !== "string" || !/^[A-Za-z0-9_-]{1,60}$/.test(a.id)) continue;
         next[a.id] = { name: String(a.name || "Untitled").slice(0, 60), order: Number(a.order) || 0, hue: Number(a.hue) || 1, summary: String(a.summary || ""),
-          items: (Array.isArray(a.items) ? a.items : []).filter(i => i && typeof i.text === "string").map(i => ({ id: String(i.id || Math.random().toString(36).slice(2)), kind: ["task", "note", "date", "link"].includes(i.kind) ? i.kind : "note", text: i.text, date: /^\d{4}-\d{2}-\d{2}$/.test(i.date || "") ? i.date : "", done: !!i.done, created: String(i.created || "") })) };
+          items: (Array.isArray(a.items) ? a.items : []).filter(i => i && typeof i.text === "string").map(i => ({ id: String(i.id || Math.random().toString(36).slice(2)), kind: ["task", "note", "date", "link"].includes(i.kind) ? i.kind : "note", text: i.text, date: /^\d{4}-\d{2}-\d{2}$/.test(i.date || "") ? i.date : "", done: !!i.done, created: String(i.created || "") })),
+          trades: (Array.isArray(a.trades) ? a.trades : []).filter(t => t && isFinite(Number(t.r))).map(t => ({ id: String(t.id || Math.random().toString(36).slice(2)), date: /^\d{4}-\d{2}-\d{2}$/.test(t.date || "") ? t.date : "", mode: ["backtest", "demo", "live"].includes(t.mode) ? t.mode : "backtest", side: t.side === "sell" ? "sell" : "buy", r: Number(t.r), rules: !!t.rules, note: String(t.note || "").slice(0, 500) })) };
       }
       areas = next;
       return persist().then(() => { if (listener) listener(snap()); return Object.keys(next).length; });
@@ -267,7 +310,7 @@ window.__lp = (() => {
   const chains = new Map();
   function save(area) {
     if (!db) { sync("Not saved: the plan's storage can't be reached in this view."); return; }
-    const body = JSON.parse(JSON.stringify({ name: area.name, order: area.order || 0, hue: area.hue || 1, summary: area.summary || "", items: area.items || [] }));
+    const body = JSON.parse(JSON.stringify({ name: area.name, order: area.order || 0, hue: area.hue || 1, summary: area.summary || "", items: area.items || [], ...(area.trades && area.trades.length ? { trades: area.trades } : {}) }));
     const prev = chains.get(area.id) || Promise.resolve();
     const next = prev.then(() => db.doc("areas/" + area.id).set(body)).then(
       () => sync("Saved on this phone."),
@@ -354,7 +397,60 @@ window.__lp = (() => {
     let list = a.items.filter(it => filter === "all" ? true : filter === "open" ? isOpen(it) : it.kind === filter);
     list = [...list].sort((x, y) => (x.done ? 1 : 0) - (y.done ? 1 : 0) || (x.date || "9999").localeCompare(y.date || "9999"));
     $("#items").innerHTML = list.length ? list.map(it => itemHtml(a, it, false)).join("") : `<li class="note">Nothing here yet. Use the box above to add the first one.</li>`;
+    renderJournal(a);
   }
+
+  // ---------- trade journal (Trading cell only)
+  let jMode = "backtest";
+  const MODES = { backtest: "Backtest", demo: "Demo", live: "Live" };
+  function tradeStats(list) {
+    const t = [...list].sort((x, y) => (x.date || "").localeCompare(y.date || ""));
+    const n = t.length, wins = t.filter(x => x.r > 0), losses = t.filter(x => x.r < 0);
+    const sum = arr => arr.reduce((s, x) => s + x.r, 0);
+    let cum = 0, peak = 0, dd = 0, streak = 0, worst = 0;
+    for (const x of t) { cum += x.r; peak = Math.max(peak, cum); dd = Math.max(dd, peak - cum); streak = x.r < 0 ? streak + 1 : 0; worst = Math.max(worst, streak); }
+    return { n, win: n ? 100 * wins.length / n : 0, avgW: wins.length ? sum(wins) / wins.length : 0, avgL: losses.length ? sum(losses) / losses.length : 0, exp: n ? sum(t) / n : 0, total: cum, rules: n ? 100 * t.filter(x => x.rules).length / n : 0, dd, worst };
+  }
+  function renderJournal(a) {
+    const on = a.id === "trading";
+    $("#journal").hidden = !on;
+    if (!on) return;
+    const phases = a.items.filter(i => /^Phase \d/.test(i.text)).sort((x, y) => x.text.localeCompare(y.text));
+    const cur = phases.find(p => !p.done);
+    $("#jPath").innerHTML = phases.length ? phases.map(p => { const m = p.text.match(/^(Phase \d+),?\s*([^:]*)/); return `<li class="${p.done ? "done" : p === cur ? "now" : ""}"><b>${esc(m ? m[1] : "Phase")}${p.done ? " · done" : p === cur ? " · now" : ""}</b><span>${esc(m && m[2] ? m[2] : p.text)}</span>${p.date ? `<span class="note">by ${esc(nice(p.date))}</span>` : ""}</li>`; }).join("") : `<li>Add tasks that start with "Phase 1", "Phase 2"… to see your path here.</li>`;
+    const all = a.trades || [], by = k => all.filter(t => t.mode === k);
+    $("#jTabs").innerHTML = Object.keys(MODES).map(k => `<button type="button" class="tab" data-jmode="${k}" aria-pressed="${k === jMode}">${MODES[k]} <span class="num">${by(k).length}</span></button>`).join("");
+    const list = by(jMode), s = tradeStats(list), f = (v, d = 2) => (v > 0 ? "+" : "") + v.toFixed(d);
+    $("#jStats").innerHTML = [["Trades", s.n], ["Win rate", s.n ? s.win.toFixed(0) + "%" : "–"], ["Average win", s.n ? f(s.avgW) + "R" : "–"], ["Average loss", s.n ? f(s.avgL) + "R" : "–"], ["Expectancy", s.n ? f(s.exp) + "R" : "–"], ["Total", s.n ? f(s.total, 1) + "R" : "–"], ["Rules followed", s.n ? s.rules.toFixed(0) + "%" : "–"], ["Worst drawdown", s.n ? s.dd.toFixed(1) + "%" : "–"], ["Longest losing run", s.n ? s.worst : "–"]].map(([l, v]) => `<div class="stat"><b>${v}</b>${l}</div>`).join("");
+    const b = tradeStats(by("backtest")), d = tradeStats(by("demo")), bd = tradeStats([...by("backtest"), ...by("demo")]);
+    const row = (ok, pending, text) => `<li class="${pending ? "" : ok ? "pass" : "fail"}">${text}</li>`;
+    $("#jGate").innerHTML = `<li style="list-style:none" class="note">Gate before going live</li>` +
+      row(b.exp > 0, b.n < 100, `Backtest: ${b.n} of 100 trades, expectancy ${b.n ? f(b.exp) + "R" : "not yet known"}`) +
+      row(d.exp > 0, d.n < 60, `Demo: ${d.n} of 60 trades, expectancy ${d.n ? f(d.exp) + "R" : "not yet known"}`) +
+      row(bd.rules >= 90, bd.n < 20, `Rules followed on ${bd.n ? bd.rules.toFixed(0) + "%" : "–"} of trades (need 90%)`) +
+      row(bd.dd < 10, bd.n < 20, `Worst drawdown ${bd.n ? bd.dd.toFixed(1) + "%" : "–"} (must stay under 10%)`);
+    const rows = [...list].sort((x, y) => (y.date || "").localeCompare(x.date || "")).slice(0, 200);
+    $("#jList").innerHTML = rows.length ? `<tr><th>Date</th><th>Side</th><th>Result</th><th>Rules</th><th>Note</th><th></th></tr>` + rows.map(t => `<tr><td class="r">${esc(t.date ? nice(t.date) : "")}</td><td>${t.side === "sell" ? "Sell" : "Buy"}</td><td class="r ${t.r > 0 ? "win" : t.r < 0 ? "loss" : ""}">${f(t.r)}R</td><td>${t.rules ? "Yes" : "No"}</td><td style="overflow-wrap:anywhere">${esc(t.note || "")}</td><td><button class="btn small danger" type="button" data-tdel="${esc(t.id)}">${armed === "trade|" + t.id ? "Sure?" : "Delete"}</button></td></tr>`).join("") : `<tr><td class="note">No ${MODES[jMode].toLowerCase()} trades logged yet. Log the first one above.</td></tr>`;
+    if (!$("#tDate").value) $("#tDate").value = todayStr();
+  }
+  $("#tradeForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const a = areas.get("trading"), r = parseFloat($("#tR").value.replace(",", "."));
+    if (!a) return;
+    if (!isFinite(r) || Math.abs(r) > 100) { $("#tMsg").textContent = "Enter the result as a number in R, such as 2 or -1."; return; }
+    a.trades = [...(a.trades || []), { id: uid(), date: $("#tDate").value || todayStr(), mode: $("#tMode").value, side: $("#tSide").value, r, rules: $("#tRules").checked, note: $("#tNote").value.trim() }];
+    jMode = $("#tMode").value; $("#tR").value = ""; $("#tNote").value = ""; $("#tRules").checked = true; $("#tMsg").textContent = "";
+    save(a); renderJournal(a);
+  });
+  $("#journal").addEventListener("click", e => {
+    const t = e.target.closest("button"), a = areas.get("trading"); if (!t || !a) return;
+    if (t.dataset.jmode) { jMode = t.dataset.jmode; $("#tMode").value = jMode; return renderJournal(a); }
+    if (t.dataset.tdel) {
+      const k = "trade|" + t.dataset.tdel;
+      if (armed !== k) { armed = k; return renderJournal(a); }
+      armed = null; a.trades = (a.trades || []).filter(x => x.id !== t.dataset.tdel); save(a); renderJournal(a);
+    }
+  });
 
   function renderResults() {
     const q = $("#search").value.trim().toLowerCase(), box = $("#results");
@@ -452,7 +548,7 @@ window.__lp = (() => {
 
   const cd = $("#copyData");
   if (cd) cd.addEventListener("click", () => {
-    const text = JSON.stringify({ app: "living-plan", v: 1, exported: new Date().toISOString(), areas: sorted().map(a => ({ id: a.id, name: a.name, order: a.order, hue: a.hue, summary: a.summary, items: a.items })) });
+    const text = JSON.stringify({ app: "living-plan", v: 1, exported: new Date().toISOString(), areas: sorted().map(a => ({ id: a.id, name: a.name, order: a.order, hue: a.hue, summary: a.summary, items: a.items, trades: a.trades || [] })) });
     const no = () => sync("Copying was blocked in this view. Open the page in Safari or Chrome and try again.");
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(() => sync("Copied. Paste it into the app under Backup."), no); else no();
   });
@@ -467,7 +563,7 @@ window.__lp = (() => {
       if (!snap.metadata.fromCache) clearTimeout(slow);
       if (snap.metadata.hasPendingWrites) return;
       const next = new Map();
-      for (const d of snap.docs) { const b = d.data() || {}; next.set(d.id, { id: d.id, name: String(b.name || "Untitled"), order: b.order || 0, hue: b.hue || 1, summary: String(b.summary || ""), items: Array.isArray(b.items) ? b.items.map(i => ({ ...i })) : [] }); }
+      for (const d of snap.docs) { const b = d.data() || {}; next.set(d.id, { id: d.id, name: String(b.name || "Untitled"), order: b.order || 0, hue: b.hue || 1, summary: String(b.summary || ""), items: Array.isArray(b.items) ? b.items.map(i => ({ ...i })) : [], trades: Array.isArray(b.trades) ? b.trades.map(t => ({ ...t, r: Number(t.r) || 0 })) : [] }); }
       areas = next; ready = true;
       if (!selected || !areas.has(selected)) { const f = sorted()[0]; selected = f ? f.id : null; }
       renderAll();

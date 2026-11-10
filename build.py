@@ -73,7 +73,8 @@ window.__lp = (() => {
       for (const a of data.areas) {
         if (!a || typeof a.id !== "string" || !/^[A-Za-z0-9_-]{1,60}$/.test(a.id)) continue;
         next[a.id] = { name: String(a.name || "Untitled").slice(0, 60), order: Number(a.order) || 0, hue: Number(a.hue) || 1, summary: String(a.summary || ""),
-          items: (Array.isArray(a.items) ? a.items : []).filter(i => i && typeof i.text === "string").map(i => ({ id: String(i.id || Math.random().toString(36).slice(2)), kind: ["task", "note", "date", "link"].includes(i.kind) ? i.kind : "note", text: i.text, date: /^\\d{4}-\\d{2}-\\d{2}$/.test(i.date || "") ? i.date : "", done: !!i.done, created: String(i.created || "") })) };
+          items: (Array.isArray(a.items) ? a.items : []).filter(i => i && typeof i.text === "string").map(i => ({ id: String(i.id || Math.random().toString(36).slice(2)), kind: ["task", "note", "date", "link"].includes(i.kind) ? i.kind : "note", text: i.text, date: /^\\d{4}-\\d{2}-\\d{2}$/.test(i.date || "") ? i.date : "", done: !!i.done, created: String(i.created || "") })),
+          trades: (Array.isArray(a.trades) ? a.trades : []).filter(t => t && isFinite(Number(t.r))).map(t => ({ id: String(t.id || Math.random().toString(36).slice(2)), date: /^\\d{4}-\\d{2}-\\d{2}$/.test(t.date || "") ? t.date : "", mode: ["backtest", "demo", "live"].includes(t.mode) ? t.mode : "backtest", side: t.side === "sell" ? "sell" : "buy", r: Number(t.r), rules: !!t.rules, note: String(t.note || "").slice(0, 500) })) };
       }
       areas = next;
       return persist().then(() => { if (listener) listener(snap()); return Object.keys(next).length; });

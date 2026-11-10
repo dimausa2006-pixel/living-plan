@@ -1,5 +1,5 @@
 // Keeps the app working offline. Bump CACHE when the app files change.
-const CACHE = "living-plan-1";
+const CACHE = "living-plan-2";
 const FILES = ["./", "index.html", "manifest.webmanifest", "icon-180.png", "icon-192.png", "icon-512.png"];
 
 self.addEventListener("install", e => {
