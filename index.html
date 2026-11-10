@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Living Plan</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Living Plan">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f1f0f6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14121d" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<style>html{-webkit-text-size-adjust:100%}body{margin:0;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}input,select,textarea,button{font-size:16px}</style>
+</head>
+<body>
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a microscope slide. A culture of cells on top (one per life area, grown by what is in it), a strip of what is due next, then the open cell's contents. Colours follow tissue stains. */
+:root {
+  --bg: #f1f0f6;
+  --surface: #ffffff;
+  --ink: #1d1a2b;
+  --muted: #625d75;
+  --line: #dcd9e6;
+  --accent: #5a3fa3;
+  --accent-soft: #e9e3f7;
+  --warn: #b4530a;
+  --warn-soft: #fbead7;
+  --bad: #b3264a;
+  --bad-soft: #fadfe6;
+  --ok: #1f7a55;
+  --s1: #5a3fa3; --s2: #c7417a; --s3: #1f7f8c; --s4: #b0621a;
+  --s5: #3c6fc4; --s6: #7a8f1f; --s7: #a3408f; --s8: #4a7a52;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Figtree", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14121d; --surface: #1d1a2a; --ink: #ebe8f5; --muted: #a39db8; --line: #332e46;
+    --accent: #a98cf0; --accent-soft: #2b2247; --warn: #f0a857; --warn-soft: #3b2a14;
+    --bad: #f0849f; --bad-soft: #3f1a26; --ok: #63c79b;
+    --s1: #a98cf0; --s2: #ee7fab; --s3: #5cc3cf; --s4: #e6a25a;
+    --s5: #86aef0; --s6: #b9cf5c; --s7: #dd85cc; --s8: #86c090;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14121d; --surface: #1d1a2a; --ink: #ebe8f5; --muted: #a39db8; --line: #332e46;
+  --accent: #a98cf0; --accent-soft: #2b2247; --warn: #f0a857; --warn-soft: #3b2a14;
+  --bad: #f0849f; --bad-soft: #3f1a26; --ok: #63c79b;
+  --s1: #a98cf0; --s2: #ee7fab; --s3: #5cc3cf; --s4: #e6a25a;
+  --s5: #86aef0; --s6: #b9cf5c; --s7: #dd85cc; --s8: #86c090;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-block: 26px 60px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 22px; }
+h1, h2, h3 { font-family: var(--display); margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(28px, 5vw, 42px); letter-spacing: -0.02em; line-height: 1.05; }
+h2 { font-size: 20px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.lede { color: var(--muted); margin: 6px 0 0; max-width: 62ch; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+input[type="text"], input[type="search"], input[type="date"], select, textarea { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; min-width: 0; }
+textarea { width: 100%; resize: vertical; min-height: 72px; }
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 8px 14px; font-weight: 600; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.btn.small { padding: 3px 9px; font-size: 13px; font-weight: 400; }
+.btn.danger { color: var(--bad); }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+.top { display: flex; flex-wrap: wrap; gap: 14px; align-items: end; justify-content: space-between; }
+.vitals { display: flex; flex-wrap: wrap; gap: 18px; font-size: 13.5px; color: var(--muted); }
+.vitals b { font-family: var(--mono); font-weight: 500; font-size: 20px; color: var(--ink); display: block; line-height: 1.1; }
+.sync { font-size: 12.5px; color: var(--muted); }
+
+.capture { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto auto; gap: 8px; }
+@media (max-width: 760px) { .capture { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .capture input[type="text"] { grid-column: 1 / -1; } }
+
+.culture { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: center; padding: 18px 8px; border: 1px dashed var(--line); border-radius: 18px; min-height: 150px; }
+.cell { --c: var(--s1); --d: 110px; width: var(--d); height: var(--d); max-width: 44vw; max-height: 44vw; border: 2px solid var(--c); background: color-mix(in srgb, var(--c) 16%, var(--surface)); display: grid; place-content: center; justify-items: center; gap: 1px; padding: 8px; text-align: center; position: relative; animation: breathe 7s ease-in-out infinite; }
+.cell[aria-pressed="true"] { background: color-mix(in srgb, var(--c) 34%, var(--surface)); box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 25%, transparent); }
+.cell .nm { font-family: var(--display); font-weight: 700; font-size: 14px; line-height: 1.1; overflow-wrap: anywhere; }
+.cell .ct { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.cell .ring { width: 26px; height: 6px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.cell .ring i { display: block; height: 100%; background: var(--c); }
+.cell .late { position: absolute; top: 6%; right: 6%; background: var(--bad); color: var(--surface); font-family: var(--mono); font-size: 11px; border-radius: 99px; padding: 0 6px; }
+.cell.new { border-style: dashed; --c: var(--muted); background: transparent; animation: none; }
+@keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.035); } }
+@media (prefers-reduced-motion: reduce) { .cell { animation: none; } }
+.empty { color: var(--muted); text-align: center; max-width: 46ch; }
+
+.next { display: grid; gap: 8px; }
+.nextlist { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; }
+.nextlist li { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--c, var(--accent)); border-radius: 8px; padding: 8px 10px; display: grid; gap: 2px; min-width: 0; }
+.nextlist button { all: unset; cursor: pointer; display: grid; gap: 2px; }
+.nextlist .when { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.nextlist .when.late { color: var(--bad); }
+.nextlist .when.soon { color: var(--warn); }
+.nextlist .what { overflow-wrap: anywhere; }
+.nextlist .where { font-size: 12px; color: var(--muted); }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 14px; min-width: 0; }
+.panelhead { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.panelhead .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--c); display: inline-block; margin-right: 8px; }
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.tab { border: 1px solid var(--line); background: var(--bg); border-radius: 99px; padding: 4px 12px; font-size: 13.5px; }
+.tab[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+.addrow { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; gap: 8px; }
+@media (max-width: 640px) { .addrow { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .addrow input[type="text"] { grid-column: 1 / -1; } }
+.items { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.item { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 10px; align-items: start; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; }
+.item input[type="checkbox"] { width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--accent); }
+.item .kind { font-family: var(--mono); font-size: 11px; color: var(--muted); padding-top: 3px; }
+.item .txt { overflow-wrap: anywhere; white-space: pre-wrap; }
+.item.done .txt { text-decoration: line-through; color: var(--muted); }
+.item .meta { display: flex; flex-wrap: wrap; gap: 8px; font-family: var(--mono); font-size: 12px; color: var(--muted); margin-top: 2px; }
+.item .meta .late { color: var(--bad); }
+.item .acts { display: flex; gap: 4px; }
+.item a { color: var(--accent); overflow-wrap: anywhere; }
+.editform { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; }
+.editform textarea { grid-column: 1 / -1; }
+.results { display: grid; gap: 8px; }
+.note { font-size: 13px; color: var(--muted); }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow" id="today">Today</div>
+      <h1>Living Plan 2027</h1>
+      <p class="lede">Every goal, task, date and note from here to September 2027. Each cell is one part of your life. A cell grows as you add to it and fills as you finish things.</p>
+    </div>
+    <div>
+      <div class="vitals" id="vitals"></div>
+      <div class="sync" id="sync">Starting…</div>
+    </div>
+  </header>
+
+  <form class="capture" id="capture" autocomplete="off">
+    <input type="text" id="capText" placeholder="Add a thought, task or date…" aria-label="New entry" maxlength="2000">
+    <select id="capArea" aria-label="Cell"></select>
+    <select id="capKind" aria-label="Type">
+      <option value="task">Task</option><option value="note">Note</option><option value="date">Date</option><option value="link">Link</option>
+    </select>
+    <input type="date" id="capDate" aria-label="Date (optional)">
+    <button class="btn primary" type="submit">Add</button>
+  </form>
+
+  <section aria-label="Cells">
+    <div class="culture" id="culture"><p class="empty">Your cells will appear here once the plan loads. Each one holds the tasks, notes and dates for one area.</p></div>
+  </section>
+
+  <section class="next" aria-label="Due next">
+    <h2>Due next</h2>
+    <ul class="nextlist" id="next"></ul>
+  </section>
+
+  <section aria-label="Search">
+    <input type="search" id="search" placeholder="Search everything…" aria-label="Search everything" style="width:100%">
+    <div class="results" id="results" hidden></div>
+  </section>
+
+  <section class="panel" id="panel" hidden>
+    <div class="panelhead">
+      <h2><span class="dot" id="pDot"></span><span id="pName"></span></h2>
+      <div class="acts" style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn small" id="renameBtn" type="button">Rename</button>
+        <button class="btn small danger" id="delAreaBtn" type="button">Delete cell</button>
+      </div>
+    </div>
+    <div>
+      <label class="note" for="summary">Where this stands</label>
+      <textarea id="summary" placeholder="A few lines on where this area stands right now."></textarea>
+    </div>
+    <form class="addrow" id="addForm" autocomplete="off">
+      <select id="addKind" aria-label="Type">
+        <option value="task">Task</option><option value="note">Note</option><option value="date">Date</option><option value="link">Link</option>
+      </select>
+      <input type="text" id="addText" placeholder="Add to this cell…" aria-label="New entry for this cell" maxlength="2000">
+      <input type="date" id="addDate" aria-label="Date (optional)">
+      <button class="btn primary" type="submit">Add</button>
+    </form>
+    <div class="tabs" id="tabs"></div>
+    <ul class="items" id="items"></ul>
+  </section>
+  <section class="panel" aria-label="Backup">
+    <h2>Backup</h2>
+    <p class="note" style="margin:0">Your plan is stored on this device only. Copy it out now and then, and paste it in here to restore it or to bring it over from the Living Plan page.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" id="expBtn" type="button">Copy all data</button>
+      <button class="btn" id="impBtn" type="button">Paste data in</button>
+    </div>
+    <div id="impBox" hidden style="display:grid;gap:8px">
+      <textarea id="impText" placeholder="Paste the copied plan data here" aria-label="Plan data"></textarea>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn primary" id="impGo" type="button">Replace my plan with this</button>
+        <button class="btn" id="impCancel" type="button">Cancel</button>
+      </div>
+    </div>
+    <p class="note" id="bkMsg" style="margin:0"></p>
+  </section>
+</div>
+
+<script>
+// The plan lives in this device's storage. This object mimics the small part of the hosted store the page uses.
+window.__lp = (() => {
+  const KEY = "living-plan-v1";
+  let areas = {}, listener = null;
+  try { areas = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (_) { areas = {}; }
+  const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(areas)); return Promise.resolve(); } catch (e) { return Promise.reject({ code: "quota_exceeded" }); } };
+  const snap = () => ({ metadata: { fromCache: false, hasPendingWrites: false }, docs: Object.keys(areas).map(id => ({ id, data: () => areas[id] })) });
+  const db = {
+    doc: path => { const id = path.split("/")[1]; return { set: body => { areas[id] = body; return persist(); }, delete: () => { delete areas[id]; return persist(); } }; },
+    collection: () => ({ onSnapshot: next => { listener = next; setTimeout(() => next(snap()), 0); return () => { listener = null; }; } }),
+  };
+  return {
+    db,
+    exportText: () => JSON.stringify({ app: "living-plan", v: 1, exported: new Date().toISOString(), areas: Object.keys(areas).map(id => ({ id, ...areas[id] })) }),
+    importText: text => {
+      const data = JSON.parse(text);
+      if (!data || data.app !== "living-plan" || !Array.isArray(data.areas)) throw new Error("not plan data");
+      const next = {};
+      for (const a of data.areas) {
+        if (!a || typeof a.id !== "string" || !/^[A-Za-z0-9_-]{1,60}$/.test(a.id)) continue;
+        next[a.id] = { name: String(a.name || "Untitled").slice(0, 60), order: Number(a.order) || 0, hue: Number(a.hue) || 1, summary: String(a.summary || ""),
+          items: (Array.isArray(a.items) ? a.items : []).filter(i => i && typeof i.text === "string").map(i => ({ id: String(i.id || Math.random().toString(36).slice(2)), kind: ["task", "note", "date", "link"].includes(i.kind) ? i.kind : "note", text: i.text, date: /^\d{4}-\d{2}-\d{2}$/.test(i.date || "") ? i.date : "", done: !!i.done, created: String(i.created || "") })) };
+      }
+      areas = next;
+      return persist().then(() => { if (listener) listener(snap()); return Object.keys(next).length; });
+    },
+  };
+})();
+</script>
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const KINDS = { task: "Task", note: "Note", date: "Date", link: "Link" };
+  const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const esc = v => String(v == null ? "" : v).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const todayStr = () => { const n = new Date(); return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, "0")}-${String(n.getDate()).padStart(2, "0")}`; };
+  const dayDiff = d => Math.round((Date.parse(d + "T00:00:00Z") - Date.parse(todayStr() + "T00:00:00Z")) / 86400000);
+  const nice = d => { const [y, m, dd] = d.split("-").map(Number); return `${dd} ${MON[m - 1]} ${y}`; };
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const SHAPES = ["58% 42% 55% 45% / 48% 56% 44% 52%", "46% 54% 42% 58% / 55% 45% 55% 45%", "52% 48% 60% 40% / 44% 58% 42% 56%", "42% 58% 48% 52% / 58% 44% 56% 42%", "55% 45% 45% 55% / 50% 60% 40% 50%"];
+
+  let db = null, areas = new Map(), selected = null, filter = "open", editId = null, armed = null, ready = false;
+  try { selected = localStorage.getItem("lp-selected"); } catch (_) {}
+
+  const sorted = () => [...areas.values()].sort((a, b) => (a.order || 0) - (b.order || 0) || a.name.localeCompare(b.name));
+  const hue = a => `var(--s${(((a.hue || 1) - 1) % 8) + 1})`;
+  const isOpen = it => it.kind === "task" ? !it.done : it.kind === "date" ? !it.done && (!it.date || dayDiff(it.date) >= 0) : false;
+  const isLate = it => it.kind === "task" && !it.done && it.date && dayDiff(it.date) < 0;
+  const sync = m => { $("#sync").textContent = m; };
+
+  // ---------- saving: one write at a time per cell
+  const chains = new Map();
+  function save(area) {
+    if (!db) { sync("Not saved: the plan's storage can't be reached in this view."); return; }
+    const body = JSON.parse(JSON.stringify({ name: area.name, order: area.order || 0, hue: area.hue || 1, summary: area.summary || "", items: area.items || [] }));
+    const prev = chains.get(area.id) || Promise.resolve();
+    const next = prev.then(() => db.doc("areas/" + area.id).set(body)).then(
+      () => sync("Saved on this phone."),
+      e => sync(e && e.code === "quota_exceeded" ? "Storage is full. Delete some entries, then try again." : "That change wasn't saved. Check your connection and try again."));
+    chains.set(area.id, next);
+  }
+
+  // ---------- rendering
+  function renderVitals() {
+    let open = 0, done = 0, late = 0, notes = 0;
+    for (const a of areas.values()) for (const it of a.items) {
+      if (it.kind === "task") { it.done ? done++ : open++; if (isLate(it)) late++; } else if (it.kind === "note") notes++;
+    }
+    const sep = dayDiff("2027-09-01");
+    $("#vitals").innerHTML = `<span><b>${open}</b>open tasks</span><span><b>${done}</b>done</span><span><b>${late}</b>overdue</span><span><b>${notes}</b>notes</span><span><b>${sep > 0 ? sep : 0}</b>days to Sep 2027</span>`;
+    $("#today").textContent = nice(todayStr());
+  }
+
+  function renderCulture() {
+    const list = sorted();
+    if (!list.length) {
+      $("#culture").innerHTML = `<p class="empty">${ready ? "No cells yet. Scroll down to Backup and paste your plan data, or add your first cell." : "Your cells will appear here once the plan loads."}</p><button class="cell new" type="button" id="newArea" style="border-radius:50%"><span class="nm">+ New cell</span></button>`;
+      return;
+    }
+    $("#culture").innerHTML = list.map((a, i) => {
+      const tasks = a.items.filter(it => it.kind === "task"), dn = tasks.filter(t => t.done).length;
+      const open = a.items.filter(isOpen).length, late = a.items.filter(isLate).length;
+      const d = 96 + Math.min(a.items.length, 40) * 2.4;
+      const p = tasks.length ? Math.round(100 * dn / tasks.length) : 0;
+      return `<button type="button" class="cell" data-area="${esc(a.id)}" aria-pressed="${a.id === selected}" style="--c:${hue(a)};--d:${d}px;border-radius:${SHAPES[i % SHAPES.length]};animation-delay:-${(i * 1.3) % 7}s" aria-label="${esc(a.name)}, ${open} open${late ? ", " + late + " overdue" : ""}">
+        ${late ? `<span class="late">${late}</span>` : ""}
+        <span class="nm">${esc(a.name)}</span><span class="ct">${open} open</span>
+        <span class="ring" title="${p}% of tasks done"><i style="width:${p}%"></i></span></button>`;
+    }).join("") + `<button class="cell new" type="button" id="newArea" style="--d:84px;border-radius:50%"><span class="nm">+ New cell</span></button>`;
+  }
+
+  function renderNext() {
+    const rows = [];
+    for (const a of areas.values()) for (const it of a.items) if (it.date && !it.done && (it.kind === "task" || it.kind === "date")) {
+      const n = dayDiff(it.date);
+      if (it.kind === "date" && n < 0) continue;
+      rows.push({ a, it, n });
+    }
+    rows.sort((x, y) => x.n - y.n);
+    const top = rows.slice(0, 12);
+    $("#next").innerHTML = top.length ? top.map(({ a, it, n }) => {
+      const w = n < 0 ? `${-n} day${n === -1 ? "" : "s"} overdue` : n === 0 ? "Today" : n === 1 ? "Tomorrow" : `In ${n} days`;
+      return `<li style="--c:${hue(a)}"><button type="button" data-jump="${esc(a.id)}"><span class="when ${n < 0 ? "late" : n <= 3 ? "soon" : ""}">${esc(nice(it.date))} · ${w}</span><span class="what">${esc(it.text)}</span><span class="where">${esc(a.name)}</span></button></li>`;
+    }).join("") : `<li><span class="where">${ready ? "Nothing dated yet. Give a task a date and it shows up here." : "Dated tasks will show up here."}</span></li>`;
+  }
+
+  function renderSelects() {
+    const cur = $("#capArea").value || selected;
+    $("#capArea").innerHTML = sorted().map(a => `<option value="${esc(a.id)}">${esc(a.name)}</option>`).join("");
+    if (cur && areas.has(cur)) $("#capArea").value = cur;
+  }
+
+  function itemHtml(a, it, showArea) {
+    if (editId === it.id) return `<li class="item"><form class="editform" data-edit="${esc(it.id)}">
+      <textarea id="edText" aria-label="Text" maxlength="4000">${esc(it.text)}</textarea>
+      <select id="edKind" aria-label="Type">${Object.keys(KINDS).map(k => `<option value="${k}"${k === it.kind ? " selected" : ""}>${KINDS[k]}</option>`).join("")}</select>
+      <input type="date" id="edDate" aria-label="Date" value="${esc(it.date || "")}">
+      <span style="display:flex;gap:6px"><button class="btn small primary" type="submit">Save</button><button class="btn small" type="button" data-cancel="1">Cancel</button></span></form></li>`;
+    const late = isLate(it), key = a.id + "|" + it.id;
+    let txt = esc(it.text);
+    if (it.kind === "link") txt = txt.replace(/https?:\/\/[^\s<]+/g, u => `<a href="${u}" target="_blank" rel="noopener">${u}</a>`);
+    const check = (it.kind === "task" || it.kind === "date") ? `<input type="checkbox" id="c-${esc(it.id)}" data-check="${esc(key)}" ${it.done ? "checked" : ""} aria-label="Done">` : `<span class="kind">${it.kind === "note" ? "✎" : "↗"}</span>`;
+    return `<li class="item${it.done ? " done" : ""}">${check}
+      <div><div class="txt">${txt}</div><div class="meta"><span>${KINDS[it.kind] || "Note"}</span>${it.date ? `<span class="${late ? "late" : ""}">${esc(nice(it.date))}${late ? " · overdue" : ""}</span>` : ""}${showArea ? `<span>${esc(a.name)}</span>` : ""}</div></div>
+      <div class="acts"><button class="btn small" type="button" data-edit-btn="${esc(key)}">Edit</button><button class="btn small danger" type="button" data-del="${esc(key)}">${armed === key ? "Sure?" : "Delete"}</button></div></li>`;
+  }
+
+  function renderPanel(keepForms) {
+    const a = areas.get(selected);
+    $("#panel").hidden = !a;
+    if (!a) return;
+    $("#panel").style.setProperty("--c", hue(a));
+    $("#pName").textContent = a.name;
+    $("#delAreaBtn").textContent = armed === "area|" + a.id ? "Sure? Deletes everything in it" : "Delete cell";
+    if (document.activeElement !== $("#summary")) $("#summary").value = a.summary || "";
+    const counts = { open: a.items.filter(isOpen).length, task: a.items.filter(i => i.kind === "task").length, note: a.items.filter(i => i.kind === "note").length, date: a.items.filter(i => i.kind === "date").length, link: a.items.filter(i => i.kind === "link").length, all: a.items.length };
+    const labels = { open: "Open", task: "Tasks", note: "Notes", date: "Dates", link: "Links", all: "Everything" };
+    $("#tabs").innerHTML = Object.keys(labels).map(k => `<button type="button" class="tab" data-tab="${k}" aria-pressed="${k === filter}">${labels[k]} <span class="num">${counts[k]}</span></button>`).join("");
+    let list = a.items.filter(it => filter === "all" ? true : filter === "open" ? isOpen(it) : it.kind === filter);
+    list = [...list].sort((x, y) => (x.done ? 1 : 0) - (y.done ? 1 : 0) || (x.date || "9999").localeCompare(y.date || "9999"));
+    $("#items").innerHTML = list.length ? list.map(it => itemHtml(a, it, false)).join("") : `<li class="note">Nothing here yet. Use the box above to add the first one.</li>`;
+  }
+
+  function renderResults() {
+    const q = $("#search").value.trim().toLowerCase(), box = $("#results");
+    if (q.length < 2) { box.hidden = true; box.innerHTML = ""; return; }
+    const hits = [];
+    for (const a of sorted()) {
+      if ((a.summary || "").toLowerCase().includes(q)) hits.push(`<li class="item"><span class="kind">≡</span><div><div class="txt">${esc(a.summary)}</div><div class="meta"><span>Status</span><span>${esc(a.name)}</span></div></div><div class="acts"><button class="btn small" type="button" data-jump="${esc(a.id)}">Open</button></div></li>`);
+      for (const it of a.items) if ((it.text || "").toLowerCase().includes(q)) hits.push(itemHtml(a, it, true));
+    }
+    box.hidden = false;
+    box.innerHTML = `<p class="note">${hits.length} match${hits.length === 1 ? "" : "es"}</p><ul class="items">${hits.slice(0, 60).join("") || ""}</ul>`;
+  }
+
+  function renderAll() {
+    renderVitals(); renderCulture(); renderNext(); renderSelects();
+    if (!editId) { renderPanel(); renderResults(); }
+  }
+
+  // ---------- actions
+  function select(id) {
+    selected = id; filter = "open"; editId = null; armed = null;
+    try { localStorage.setItem("lp-selected", id); } catch (_) {}
+    renderAll();
+    if (areas.has(id)) $("#capArea").value = id;
+  }
+  function addItem(areaId, kind, text, date) {
+    const a = areas.get(areaId); text = text.trim();
+    if (!a || !text) return false;
+    a.items = [...a.items, { id: uid(), kind, text, date: date || "", done: false, created: todayStr() }];
+    save(a); renderAll(); return true;
+  }
+  const find = key => { const [aid, iid] = key.split("|"); const a = areas.get(aid); return a ? { a, it: a.items.find(i => i.id === iid) } : {}; };
+
+  $("#capture").addEventListener("submit", e => {
+    e.preventDefault();
+    if (!areas.size) { sync("Add a cell first, then add entries to it."); return; }
+    if (addItem($("#capArea").value, $("#capKind").value, $("#capText").value, $("#capDate").value)) { $("#capText").value = ""; $("#capDate").value = ""; }
+  });
+  $("#addForm").addEventListener("submit", e => {
+    e.preventDefault();
+    if (addItem(selected, $("#addKind").value, $("#addText").value, $("#addDate").value)) { $("#addText").value = ""; $("#addDate").value = ""; if (filter !== "all" && filter !== "open") filter = $("#addKind").value; renderPanel(); }
+  });
+  $("#summary").addEventListener("change", () => { const a = areas.get(selected); if (a && a.summary !== $("#summary").value) { a.summary = $("#summary").value; save(a); } });
+  $("#search").addEventListener("input", () => { editId = null; renderResults(); });
+
+  document.addEventListener("click", e => {
+    const t = e.target.closest("button, [data-area]"); if (!t) return;
+    if (t.dataset.area) return select(t.dataset.area);
+    if (t.dataset.jump) { select(t.dataset.jump); $("#panel").scrollIntoView({ block: "start" }); return; }
+    if (t.dataset.tab) { filter = t.dataset.tab; editId = null; return renderPanel(); }
+    if (t.id === "newArea") {
+      const id = "a" + uid(), order = Math.max(0, ...[...areas.values()].map(a => a.order || 0)) + 1;
+      const a = { id, name: "New cell", order, hue: (areas.size % 8) + 1, summary: "", items: [] };
+      areas.set(id, a); save(a); select(id); startRename(); return;
+    }
+    if (t.id === "renameBtn") return startRename();
+    if (t.id === "delAreaBtn") {
+      const k = "area|" + selected;
+      if (armed !== k) { armed = k; return renderPanel(); }
+      const id = selected; armed = null; areas.delete(id); selected = null;
+      if (db) db.doc("areas/" + id).delete().then(() => sync("Cell deleted."), () => sync("The cell wasn't deleted. Try again."));
+      return renderAll();
+    }
+    if (t.dataset.editBtn) { const { it } = find(t.dataset.editBtn); if (it) { editId = it.id; armed = null; const { a } = find(t.dataset.editBtn); if (a.id !== selected) { selected = a.id; } filter = "all"; $("#search").value = ""; renderResults(); renderPanel(); const el = $("#edText"); if (el) el.focus(); } return; }
+    if (t.dataset.cancel) { editId = null; return renderAll(); }
+    if (t.dataset.del) {
+      if (armed !== t.dataset.del) { armed = t.dataset.del; renderPanel(); renderResults(); return; }
+      const { a, it } = find(t.dataset.del); armed = null;
+      if (a && it) { a.items = a.items.filter(i => i.id !== it.id); save(a); }
+      return renderAll();
+    }
+  });
+  document.addEventListener("change", e => {
+    const k = e.target.dataset && e.target.dataset.check; if (!k) return;
+    const { a, it } = find(k); if (!a || !it) return;
+    a.items = a.items.map(i => i.id === it.id ? { ...i, done: e.target.checked, doneOn: e.target.checked ? todayStr() : "" } : i);
+    save(a); renderAll();
+  });
+  document.addEventListener("submit", e => {
+    const f = e.target.closest("[data-edit]"); if (!f) return;
+    e.preventDefault();
+    const a = areas.get(selected), text = $("#edText").value.trim();
+    if (a && text) { a.items = a.items.map(i => i.id === f.dataset.edit ? { ...i, text, kind: $("#edKind").value, date: $("#edDate").value } : i); save(a); }
+    editId = null; renderAll();
+  });
+
+  function startRename() {
+    const a = areas.get(selected); if (!a) return;
+    $("#pName").innerHTML = `<input type="text" id="renameInput" value="${esc(a.name)}" maxlength="40" aria-label="Cell name">`;
+    const inp = $("#renameInput"); inp.focus(); inp.select();
+    const done = () => { const v = inp.value.trim(); if (v && v !== a.name) { a.name = v; save(a); } renderAll(); };
+    inp.addEventListener("blur", done, { once: true });
+    inp.addEventListener("keydown", ev => { if (ev.key === "Enter") inp.blur(); });
+  }
+
+  const cd = $("#copyData");
+  if (cd) cd.addEventListener("click", () => {
+    const text = JSON.stringify({ app: "living-plan", v: 1, exported: new Date().toISOString(), areas: sorted().map(a => ({ id: a.id, name: a.name, order: a.order, hue: a.hue, summary: a.summary, items: a.items })) });
+    const no = () => sync("Copying was blocked in this view. Open the page in Safari or Chrome and try again.");
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(() => sync("Copied. Paste it into the app under Backup."), no); else no();
+  });
+
+  // ---------- load
+  renderAll();
+  (async () => {
+    db = window.__lp.db;
+    if (!db) { ready = true; sync("This view can't reach the plan's storage. Open it signed in to claude.ai."); renderAll(); return; }
+    const slow = setTimeout(() => sync("Your plan can't be reached yet. Still trying…"), 10000);
+    db.collection("areas").onSnapshot(snap => {
+      if (!snap.metadata.fromCache) clearTimeout(slow);
+      if (snap.metadata.hasPendingWrites) return;
+      const next = new Map();
+      for (const d of snap.docs) { const b = d.data() || {}; next.set(d.id, { id: d.id, name: String(b.name || "Untitled"), order: b.order || 0, hue: b.hue || 1, summary: String(b.summary || ""), items: Array.isArray(b.items) ? b.items.map(i => ({ ...i })) : [] }); }
+      areas = next; ready = true;
+      if (!selected || !areas.has(selected)) { const f = sorted()[0]; selected = f ? f.id : null; }
+      renderAll();
+      if (!snap.metadata.fromCache) sync("Saved on this phone.");
+    }, () => { clearTimeout(slow); ready = true; sync("The connection to your plan stopped. Reopen the page to reconnect."); });
+  })();
+})();
+</script>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s), msg = t => { $("#bkMsg").textContent = t; };
+  $("#expBtn").addEventListener("click", () => {
+    const text = window.__lp.exportText();
+    const fallback = () => { $("#impBox").hidden = false; $("#impText").value = text; $("#impText").select(); msg("Copying was blocked. The data is in the box: select all and copy it."); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(() => msg("Copied. Paste it somewhere safe, such as a note."), fallback); else fallback();
+  });
+  $("#impBtn").addEventListener("click", () => { $("#impBox").hidden = false; $("#impText").value = ""; $("#impText").focus(); msg(""); });
+  $("#impCancel").addEventListener("click", () => { $("#impBox").hidden = true; msg(""); });
+  $("#impGo").addEventListener("click", () => {
+    try {
+      window.__lp.importText($("#impText").value.trim()).then(n => { $("#impBox").hidden = true; $("#impText").value = ""; msg(n + " cells loaded."); window.scrollTo(0, 0); },
+        () => msg("This device's storage is full, so the plan wasn't saved."));
+    } catch (_) { msg("That isn't plan data. Copy it again with the Copy all data button and paste the whole thing."); }
+  });
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+})();
+</script>
+</body>
+</html>

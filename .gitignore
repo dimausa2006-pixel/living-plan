@@ -1,0 +1,4 @@
+.claude/
+__pycache__/
+*.json.bak
+my-plan-data.json
